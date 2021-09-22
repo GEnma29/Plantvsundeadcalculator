@@ -10,10 +10,9 @@ export const Layout = ({children}) => {
         >
             <Navbar />
             <Flex 
-            align="center"
             justify="center"
             w="100vw"
-            h="90vh"
+            h="100vh"
             >
             {children}
             </Flex>

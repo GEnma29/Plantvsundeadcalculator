@@ -6,9 +6,10 @@ const Navbar = () => {
         <Flex
         align="center"
         justifyContent="space-between"
-        h="10vh"
+        h="50px"
         w="100vw"
         bg="gray.900"
+        p={2}
         >
            <Text p={2} color="white">PlantvsUndeadCalculator</Text>
            <Darkmode />

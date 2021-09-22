@@ -7,89 +7,125 @@ import {
   Heading,
   FormControl,
   FormLabel,
+  Select,
   FormErrorMessage,
   FormHelperText,
   Text,
   useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
+//import PlantItem from "./PlantItem";
+import Climate from "../components/Climate";
 import { Formik, Form, Field } from "formik";
-import GardenList from "./GardenList";
+import PlantItem from "./PlantItem";
 const Calculater = () => {
+  const typeofBonus= "increase"
+  const Bonus= 0.30
+
   const Plants = [];
 
   const Frombackground = useColorModeValue("gray.200", "gray.700");
 
-  function validateLE(LE: number) {
-    let error;
-    if (!LE) {
-      error = "LE is required";
-    } else if (LE < 100) {
-      error = "the number will be > 100 LE😱";
-    }
-    return error;
-  }
   return (
-    <Flex flexDirection="column" p={4}>
+    <Flex flexWrap="wrap" justify="center" m={4} >
+      <Box m={2} minW="250px">
+      <Climate />
+      {Plants.map((Plant,index)=>{
+        <PlantItem index={index} gain={Plant.GainsperHour} typeofbonus={typeofBonus} bonus={Bonus}  />
+
+      })}
+      </Box>
       <Formik
-        initialValues={{ 
-          LE: 200,
-          hour:72 
+        initialValues={{
+          le: 250,
+          hour: 72,
+          element:"",
         }}
         onSubmit={(values, actions) => {
           setTimeout(() => {
-            const Plant={
-              'LE':values.LE,
-              'Hours':values.hour
-            }
-            alert(JSON.stringify(Plant, null, 2))
+            const LEXhour = values.le / values.hour;
+            const LEXDay = LEXhour * 24;
+            const Plant = {
+              GainsperHour: LEXhour.toFixed(2),
+              GainperDay: Math.round(LEXDay),
+              LE: values.le,
+              Hours: values.hour,
+              Element: values.element,
+            };
+            Plants.push(Plant);
+            console.log(Plants);
             actions.setSubmitting(false);
           }, 1000);
         }}
       >
-         {(props) => (
-        <Form  >
-          <Box flexDirection="column" bg={Frombackground} p={4} rounded={8}>
-            <Heading mb={6}>Calculate PVU </Heading>
-            <Heading size="md">Plant</Heading>
-            <Box display="flex" flexDirection="row">
-              <Box display="flex" flexDir="column" p={2}>
-                <Field name="LE" validate={validateLE}>
-                  {({ field}) => (
-                    <FormControl id="LE" isRequired>
-                      <FormLabel htmlFor="LE">LE</FormLabel>
-                      <Input {...field} id="LE" placeholder="250" />
+        {(props) => (
+          <Form>
+            <Box flexDirection="column" bg={Frombackground} p={4} rounded={8}>
+              <Heading mb={6}>Calculate PVU </Heading>
+              <Box mt={2}>
+                <Field name="le">
+                  {({ field, form }) => (
+                    <FormControl isRequired>
+                      <FormLabel p={2} htmlFor="le">
+                        LE
+                      </FormLabel>
+                      <Input {...field} id="le" placeholder="250" />
                     </FormControl>
                   )}
                 </Field>
               </Box>
-              <Box display="flex" flexDir="column" p={2}>
-              <Field name="hour" validate={validateLE}>
-                  {({ field}) => (
-                    <FormControl id="hour-plant" isRequired>
-                      <FormLabel htmlFor="Hours">Hours</FormLabel>
-                      <Input {...field} id="Hours" placeholder="72" />
+              <Box m={2}>
+                <Field name="hour">
+                  {({ field, form }) => (
+                    <FormControl isRequired>
+                      <FormLabel p={2} htmlFor="hour">
+                        Hours
+                      </FormLabel>
+                      <Input
+                        {...field}
+                        id="hour"
+                        placeholder="hour"
+                        onChange={props.handleChange}
+                      />
                     </FormControl>
                   )}
                 </Field>
               </Box>
+              <Text m={2}>Plant Element</Text>
+              <Select
+                name="element"
+                value={props.values.element}
+                onChange={props.handleChange}
+                onBlur={props.handleBlur}
+              >
+                <option value="dark">Dark</option>
+                <option value="electro">Electro</option>
+                <option value="fire">Fire</option>
+                <option value="water">water</option>
+                <option value="ligth">Ligth</option>
+                <option value="Parasite">Parasite</option>
+                <option value="metal">Metal</option>
+                <option value="wind">Wind</option>
+              </Select>
+              <Flex justify="center">
+                <Button
+                  mt={4}
+                  colorScheme="teal"
+                  isLoading={props.isSubmitting}
+                  type="submit"
+                >
+                  Add Plant
+                </Button>
+              </Flex>
             </Box>
-            <Flex justify="center">
-            <Button
-            mt={4}
-            colorScheme="teal"
-            isLoading={props.isSubmitting}
-            type="submit"
-          >
-            Submit
-          </Button>
-            </Flex>
-          </Box>
-        </Form>
+          </Form>
         )}
       </Formik>
-      <Box m={2}>
-        <GardenList Plants={Plants} />
+      <Box mt={2}>
+      {Plants.map((Plant,index)=>{
+        <PlantItem index={index} gain={Plant.GainsperHour} typeofbonus={typeofBonus} bonus={Bonus}  />
+
+      })}
       </Box>
     </Flex>
   );
